@@ -61,6 +61,7 @@ Item {
             clip: true
             model: root.queueState.queue || []
             spacing: 4
+            cacheBuffer: 2000
             Controls.ScrollBar.vertical: Controls.ScrollBar {}
             delegate: Row {
                 required property var modelData
@@ -72,9 +73,10 @@ Item {
                     contentItem: Text {
                         text: (modelData.current ? "▶ " : (index + 1) + ". ") + modelData.title
                         textFormat: Text.PlainText; elide: Text.ElideRight
-                        color: modelData.current ? Color.accent : Color.foreground
+                        color: modelData.current ? Color.accent : (parent.activeFocus ? Color.accent : Color.foreground)
                         font.family: "monospace"; font.pixelSize: 12; verticalAlignment: Text.AlignVCenter
                     }
+                    background: Rectangle { color: parent.activeFocus ? Qt.rgba(Color.accent.r, Color.accent.g, Color.accent.b, 0.12) : "transparent" }
                     onClicked: root.action("play-entry", modelData.id)
                     Controls.ToolTip.visible: hovered
                     Controls.ToolTip.text: modelData.path
