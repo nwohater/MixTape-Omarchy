@@ -42,9 +42,13 @@ workspace; it is not pinned across workspaces.
 
 1. Open **Queue → + Songs**.
 2. Browse to your music folder, or type its path and press Enter.
-3. Select songs using the checkboxes, or choose **Select all**.
+3. Select songs using the checkboxes, or choose **Select all**. Selections stay
+   checked as you browse between folders; **Select all** adds the current folder's
+   files to your selection. **None** clears selections across all folders.
 4. Click **Add selected**. **+ Folder** adds all supported audio files in the
-   current folder, alphabetically; it does not include subfolders.
+   current folder and all its subfolders, visiting albums and tracks alphabetically.
+   Directory symlinks are not followed. Embedded playlists are skipped to avoid
+   adding their tracks twice.
 5. In the queue, click a track to play it. Use **↑ / ↓** to reorder and **×**
    to remove a song. Reordering preserves the current song's playback position.
 6. Choose **Save as**, name your mix, and click **Save M3U**.
@@ -60,7 +64,9 @@ never deletes your audio files or saved playlists.
 
 Adding songs preserves existing playback. Adding to an empty queue prepares
 it paused, ready for you to press Play. **Play selected** replaces the queue
-and starts playback. M3U, M3U8, and PLS files can also be selected or appended.
+and starts playback. From the Load browser, **Save selected** prepares your
+selected songs as a paused queue and opens the playlist naming form; enter a
+name and click **Save M3U**. M3U, M3U8, and PLS files can also be selected or appended.
 
 ## Controls
 

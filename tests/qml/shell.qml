@@ -22,13 +22,15 @@ ShellRoot {
     Item {
         Mixtape.Cassette { id: tape; width: 396; height: 210; playing: true }
         Mixtape.QueueView {
+            id: queueView
             width: 396; height: 510
-            state: ({name: "Test mix", count: 2, queue: [
+            queueState: ({name: "Test mix", count: 2, queue: [
                 {id: 10, title: "Track one", path: "/tmp/one.wav", current: true},
                 {id: 11, title: "Track two", path: "/tmp/two.wav", current: false}
             ]})
         }
         Mixtape.MusicBrowser {
+            id: browser
             width: 396; height: 510
             listing: ({path: "/tmp", parent: "/", entries: [
                 {name: "Songs", path: "/tmp/Songs", directory: true},
@@ -41,6 +43,25 @@ ShellRoot {
         onTriggered: {
             phase++
             if (phase === 1) {
+                queueView.beginSave()
+                check(queueView.saving && !queueView.overwriteRequired, "save form opens for selected songs")
+                var original = browser.listing
+                browser.select('/tmp/one.wav', true)
+                browser.listing = {path: '/tmp/Songs', parent: '/tmp', entries: [
+                    {name: 'Two.wav', path: '/tmp/Songs/two.wav', directory: false}
+                ]}
+                check(browser.selected.length === 1, 'selection survives entering a folder')
+                browser.selectAll()
+                browser.selectAll()
+                check(browser.selected.length === 2, 'select all preserves other folders without duplicates')
+                browser.listing = original
+                check(browser.selected.indexOf('/tmp/one.wav') !== -1 && browser.selected.length === 2,
+                      'selection survives navigating up')
+                browser.select('/tmp/one.wav', false)
+                check(browser.selected.length === 1 && browser.selected[0] === '/tmp/Songs/two.wav',
+                      'deselect keeps other folders selected')
+                browser.resetSelection()
+                check(browser.selected.length === 0, 'clear removes selections across folders')
                 reel = findReel(tape)
                 check(reel !== null, "reel exists")
                 before = reel.rotation

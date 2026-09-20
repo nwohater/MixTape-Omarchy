@@ -19,7 +19,13 @@ Item {
         if (checked) next.push(path)
         selected = next
     }
-    onListingChanged: resetSelection()
+    function selectAll() {
+        var next = selected.slice()
+        listing.entries.forEach(function(entry) {
+            if (!entry.directory && next.indexOf(entry.path) === -1) next.push(entry.path)
+        })
+        selected = next
+    }
 
     Column {
         anchors.fill: parent; spacing: 10
@@ -41,15 +47,15 @@ Item {
             MixButton {
                 text: "Select all"
                 enabled: !root.busy
-                onClicked: root.selected = root.listing.entries.filter(function(e) { return !e.directory }).map(function(e) { return e.path })
+                onClicked: root.selectAll()
             }
-            MixButton { text: "None"; onClicked: root.resetSelection() }
+            MixButton { text: "None"; enabled: !root.busy; onClicked: root.resetSelection() }
             MixButton {
                 text: "+ Folder"
                 enabled: !root.busy
                 onClicked: root.submit("add-folder", root.listing.path)
                 Controls.ToolTip.visible: hovered
-                Controls.ToolTip.text: "Add audio files in this folder (not subfolders)"
+                Controls.ToolTip.text: "Add audio files in this folder and all subfolders"
             }
         }
         ListView {
@@ -92,7 +98,18 @@ Item {
                 highlightedMix: true
                 onClicked: root.submit(root.adding ? "append" : "load-many", root.selected)
             }
-            Text { anchors.verticalCenter: parent.verticalCenter; text: root.adding ? "Keeps current playback" : "Replaces current queue"; color: Color.foreground; opacity: 0.55; font.pixelSize: 10 }
+            MixButton {
+                text: "Save selected"
+                visible: !root.adding
+                enabled: !root.busy && root.selected.length > 0
+                onClicked: root.submit("build-many", root.selected)
+                Controls.ToolTip.visible: hovered
+                Controls.ToolTip.text: "Prepare selected songs in the queue and name your mixtape"
+            }
+        }
+        Text {
+            text: root.adding ? "Keeps current playback" : "Replaces current queue · Save selected prepares it paused"
+            color: Color.foreground; opacity: 0.55; font.pixelSize: 10
         }
     }
 }

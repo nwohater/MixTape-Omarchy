@@ -150,6 +150,27 @@ def select_files(values):
     return paths
 
 
+def folder_files(value):
+    folder = Path(value).expanduser().resolve(strict=True)
+    if not folder.is_dir():
+        raise ValueError('Select a folder')
+    paths = []
+
+    def scan_error(error):
+        raise error
+
+    # Do not follow directory symlinks: collections can contain links to ancestors.
+    for directory, folders, files in os.walk(folder, onerror=scan_error):
+        folders.sort(key=lambda name: (name.casefold(), name))
+        for name in sorted(files, key=lambda name: (name.casefold(), name)):
+            path = Path(directory) / name
+            if path.suffix.lower() in AUDIO and path.is_file():
+                paths.append(str(path))
+    if not paths:
+        raise ValueError('No supported audio files in this folder or its subfolders')
+    return select_files(paths)
+
+
 def save_playlist(client, options):
     name = str(options.get('name', '')).strip()
     if name.lower().endswith(('.m3u', '.m3u8')):
@@ -216,17 +237,15 @@ def execute(args):
         directory = playlist_directory()
         return browse(str(directory)) if directory.exists() else {
             'path': str(directory), 'parent': str(directory.parent), 'entries': []}
-    if action not in {'status', 'load', 'load-many', 'append', 'add-folder', 'save', 'play-entry',
+    if action not in {'status', 'load', 'load-many', 'build-many', 'append', 'add-folder', 'save', 'play-entry',
                       'remove', 'move', 'clear', 'shuffle', 'repeat',
                       'toggle', 'stop', 'previous', 'next', 'seek', 'volume', 'quit'}:
         raise ValueError('Unknown player action')
     selected = []
-    if action in {'load', 'load-many', 'append'}:
+    if action in {'load', 'load-many', 'build-many', 'append'}:
         selected = select_files([args[1]] if action == 'load' else json.loads(args[1]))
     elif action == 'add-folder':
-        folder = Path(args[1]).expanduser().resolve(strict=True)
-        selected = select_files([str(p) for p in sorted(folder.iterdir(), key=lambda p: p.name.casefold())
-                                 if p.is_file() and p.suffix.lower() in AUDIO])
+        selected = folder_files(args[1])
     client = connect(start=bool(selected))
     if client is None:
         if action not in {'status', 'quit'}:
@@ -234,18 +253,20 @@ def execute(args):
         return status(None)
     try:
         if selected:
-            replace = action in {'load', 'load-many'}
+            replace = action in {'load', 'load-many', 'build-many'}
             was_empty = not queue(client)
             shuffled = details(client).get('shuffle', False)
             if shuffled:
                 client.command('playlist-unshuffle')
+            if action == 'build-many':
+                client.command('set_property', 'pause', True)
             for index, path in enumerate(selected):
                 mode = 'replace' if replace and index == 0 else 'append'
                 client.command('loadlist' if path.suffix.lower() in PLAYLISTS else 'loadfile', str(path), mode)
             if replace or was_empty:
                 if not replace:
                     client.command('set_property', 'playlist-pos', 0)
-                client.command('set_property', 'pause', not replace)
+                client.command('set_property', 'pause', not replace or action == 'build-many')
                 name = selected[0].stem if len(selected) == 1 and selected[0].suffix.lower() in PLAYLISTS else 'Untitled mixtape'
                 update_details(client, name=name, dirty=name == 'Untitled mixtape', shuffle=False)
             else:

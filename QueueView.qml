@@ -14,6 +14,14 @@ Item {
     signal load()
     signal action(string command, var value)
 
+    function beginSave() {
+        mixName.text = root.queueState.name || "Untitled mixtape"
+        root.overwriteRequired = false
+        root.saving = true
+        mixName.forceActiveFocus()
+        mixName.selectAll()
+    }
+
     function save(overwrite) {
         root.action("save", {name: mixName.text, overwrite: overwrite})
     }

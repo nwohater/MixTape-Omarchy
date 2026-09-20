@@ -79,7 +79,12 @@ Panel {
                 if (JSON.stringify(next.queue) === JSON.stringify(playerState.queue)) next.queue = playerState.queue
                 playerState = next
                 if (showErrors) {
-                    if (pendingView) { view = pendingView; pendingView = "" }
+                    if (pendingView) {
+                        if (action.actionName === "append" || action.actionName === "load-many" || action.actionName === "build-many") musicBrowser.resetSelection()
+                        view = pendingView
+                        if (action.actionName === "build-many") queueView.beginSave()
+                        pendingView = ""
+                    }
                     if (action.actionName === "save") {
                         queueView.saving = false
                         queueView.overwriteRequired = false
@@ -284,6 +289,7 @@ Panel {
                 onAction: function(command, value) { root.act(command, value) }
             }
             MusicBrowser {
+                id: musicBrowser
                 anchors.fill: parent
                 anchors.bottomMargin: 26
                 visible: root.view === "browser"

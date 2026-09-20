@@ -140,6 +140,51 @@ class PlaybackTest(unittest.TestCase):
         player.run(['load-many', json.dumps([str(self.second), str(self.track)])])
         self.wait_for(lambda s: s['count'] == 2 and s['queue'][0]['path'] == str(self.second))
 
+    def test_recursive_folder(self):
+        collection = self.path / 'George Jones'
+        disc = collection / 'Album B' / 'Disc 1'
+        disc.mkdir(parents=True)
+        album = collection / 'Album A'
+        album.mkdir()
+        first = album / '01 Song.wav'
+        second = disc / '02 Song.WAV'
+        first.write_bytes(self.track.read_bytes())
+        second.write_bytes(self.second.read_bytes())
+        (album / 'cover.jpg').write_text('ignored')
+        (album / 'album.m3u').write_text(str(first))
+        (disc / 'loop').symlink_to(collection, target_is_directory=True)
+        player.run(['load', str(self.track)])
+        self.wait_for(lambda s: s.get('duration', 0) > 0)
+        player.run(['seek', '10'])
+        before = self.wait_for(lambda s: s.get('position', 0) >= 9)
+        state = player.run(['add-folder', str(collection)])
+        self.assertEqual([e['path'] for e in state['queue']],
+                         [str(self.track), str(first), str(second)])
+        self.assertEqual(state['queue'][0]['id'], before['queue'][0]['id'])
+        self.assertFalse(state['paused'])
+        self.assertGreaterEqual(state['position'], 9)
+        empty = collection / 'Empty'
+        empty.mkdir()
+        with self.assertRaisesRegex(ValueError, 'No supported audio'):
+            player.run(['add-folder', str(empty)])
+        self.assertEqual(player.run(['status'])['count'], 3)
+
+    def test_build_selection_and_save(self):
+        import json
+        album = self.path / 'Another album'
+        album.mkdir()
+        other = album / 'Song.wav'
+        other.write_bytes(self.second.read_bytes())
+        player.run(['load', str(self.second)])
+        self.wait_for(lambda s: s.get('loaded') and not s['paused'])
+        paths = [str(self.track), str(other)]
+        player.run(['build-many', json.dumps(paths)])
+        state = self.wait_for(lambda s: s['count'] == 2 and s.get('loaded'))
+        self.assertTrue(state['paused'])
+        self.assertEqual([e['path'] for e in state['queue']], paths)
+        player.run(['save', json.dumps({'name': 'Across albums'})])
+        self.assertEqual((self.path / 'mixes' / 'Across albums.m3u').read_text().splitlines()[1:], paths)
+
 
 if __name__ == '__main__':
     unittest.main()
