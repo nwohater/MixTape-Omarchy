@@ -4,6 +4,12 @@ import QtQuick.Controls as Controls
 import Quickshell
 import Quickshell.Io
 import qs.Commons
+// Aliased import: in this file's context the built-in `Color` value type
+// shadows the `qs.Commons` `Color` singleton, so unqualified
+// `Color.background` silently resolves to undefined and every themed colour
+// assignment fails (window keeps its default white background). Qualify via
+// the module alias, matching Omarchy's own Ui/Panel.qml and plugins/bar/Bar.qml.
+import qs.Commons as Commons
 import qs.Ui
 
 Panel {
@@ -320,12 +326,12 @@ Panel {
         bar: root.bar
         labelVisible: false
         hasVisualContent: true
-        fixedWidth: Style.space(32)
+        fixedWidth: Commons.Style.space(32)
         active: root.playing
         CassetteIcon {
             anchors.centerIn: parent
-            width: Style.spaceReal(16.2)
-            height: Style.spaceReal(12.15)
+            width: Commons.Style.spaceReal(16.2)
+            height: Commons.Style.spaceReal(12.15)
             ink: button.active ? button.activeColor : button.foreground
         }
         tooltipText: "Mixtape · " + String(root.playerState.title).replace(/</g, "‹").replace(/>/g, "›")
@@ -340,7 +346,7 @@ Panel {
         id: playerWindow
         title: "Mixtape"
         visible: false
-        color: Color.background
+        color: Commons.Color.background
         implicitWidth: 440
         implicitHeight: root.view === "deck"
             ? Math.ceil(titleBar.height + 16 + deckColumn.implicitHeight + 18
@@ -354,19 +360,19 @@ Panel {
         Rectangle {
             anchors.fill: parent
             color: "transparent"
-            border.color: Color.accent
+            border.color: Commons.Color.accent
             border.width: 1
         }
         Rectangle {
             id: titleBar
             width: parent.width
             height: 34
-            color: Qt.rgba(Color.foreground.r, Color.foreground.g, Color.foreground.b, 0.05)
+            color: Qt.rgba(Commons.Color.foreground.r, Commons.Color.foreground.g, Commons.Color.foreground.b, 0.05)
             Text {
                 anchors.left: parent.left; anchors.leftMargin: 16
                 anchors.verticalCenter: parent.verticalCenter
                 text: "MIXTAPE · drag to move"
-                color: Color.foreground; font.family: "monospace"; font.pixelSize: 11
+                color: Commons.Color.foreground; font.family: "monospace"; font.pixelSize: 11
             }
             MouseArea {
                 anchors.fill: parent
@@ -439,45 +445,45 @@ Panel {
                 visible: root.view === "deck"
                 Row {
                     width: parent.width
-                    Text { width: parent.width - 65; text: "MIXTAPE / PORTABLE STEREO"; color: Color.foreground; font.family: "monospace"; font.pixelSize: 12; font.bold: true }
-                    Text { text: root.playing ? "● PLAY" : "○ IDLE"; color: root.playing ? Color.accent : Color.foreground; font.family: "monospace"; font.pixelSize: 11 }
+                    Text { width: parent.width - 65; text: "MIXTAPE / PORTABLE STEREO"; color: Commons.Color.foreground; font.family: "monospace"; font.pixelSize: 12; font.bold: true }
+                    Text { text: root.playing ? "● PLAY" : "○ IDLE"; color: root.playing ? Commons.Color.accent : Commons.Color.foreground; font.family: "monospace"; font.pixelSize: 11 }
                 }
                 Cassette { width: parent.width; height: 210; playing: root.playing; animationVisible: root.opened && root.view === "deck"; title: root.playerState.name || "Untitled mixtape" }
                 Column {
                     width: parent.width; spacing: 5
-                    Text { width: parent.width; text: root.playerState.title || "Insert a mixtape"; textFormat: Text.PlainText; elide: Text.ElideRight; color: Color.foreground; font.family: "monospace"; font.pixelSize: 15; font.bold: true }
-                    Text { width: parent.width; text: root.playerState.artist || (root.playerState.loaded ? "LOCAL AUDIO / TRACK " + ((root.playerState.index || 0) + 1) + " OF " + (root.playerState.count || 1) : "Press EJECT to choose music or a playlist"); textFormat: Text.PlainText; elide: Text.ElideRight; color: Color.foreground; opacity: 0.55; font.family: "monospace"; font.pixelSize: 11 }
+                    Text { width: parent.width; text: root.playerState.title || "Insert a mixtape"; textFormat: Text.PlainText; elide: Text.ElideRight; color: Commons.Color.foreground; font.family: "monospace"; font.pixelSize: 15; font.bold: true }
+                    Text { width: parent.width; text: root.playerState.artist || (root.playerState.loaded ? "LOCAL AUDIO / TRACK " + ((root.playerState.index || 0) + 1) + " OF " + (root.playerState.count || 1) : "Press EJECT to choose music or a playlist"); textFormat: Text.PlainText; elide: Text.ElideRight; color: Commons.Color.foreground; opacity: 0.55; font.family: "monospace"; font.pixelSize: 11 }
                 }
                 Column {
                     width: parent.width; spacing: 7
                     Rectangle {
-                        width: parent.width; height: 4; color: Qt.rgba(Color.foreground.r, Color.foreground.g, Color.foreground.b, 0.15)
-                        Rectangle { height: parent.height; width: parent.width * Math.min(1, (root.playerState.position || 0) / Math.max(1, root.playerState.duration || 0)); color: Color.accent }
+                        width: parent.width; height: 4; color: Qt.rgba(Commons.Color.foreground.r, Commons.Color.foreground.g, Commons.Color.foreground.b, 0.15)
+                        Rectangle { height: parent.height; width: parent.width * Math.min(1, (root.playerState.position || 0) / Math.max(1, root.playerState.duration || 0)); color: Commons.Color.accent }
                     }
                     Item {
                         width: parent.width; height: 14
-                        Text { anchors.left: parent.left; text: root.clock(root.playerState.position); color: Color.foreground; font.family: "monospace"; font.pixelSize: 11 }
-                        Text { anchors.right: parent.right; text: root.clock(root.playerState.duration); color: Color.foreground; font.family: "monospace"; font.pixelSize: 11 }
+                        Text { anchors.left: parent.left; text: root.clock(root.playerState.position); color: Commons.Color.foreground; font.family: "monospace"; font.pixelSize: 11 }
+                        Text { anchors.right: parent.right; text: root.clock(root.playerState.duration); color: Commons.Color.foreground; font.family: "monospace"; font.pixelSize: 11 }
                     }
                 }
                 Row {
                     width: parent.width; spacing: 8
                     DeckButton { id: ejectButton; width: (parent.width - 32) / 5; text: "⏏"; caption: "EJECT"; hint: "Choose an audio file or playlist"; onClicked: root.eject() }
                     DeckButton { width: (parent.width - 32) / 5; transportDirection: -1; caption: "REW"; hint: "Previous track · hold to rewind 10 seconds"; enabled: root.playerState.loaded; onClicked: if (!didHold) root.act("previous"); onHeld: root.act("seek", -10) }
-                    DeckButton { width: (parent.width - 32) / 5; text: root.playing ? "Ⅱ" : "▶"; caption: root.playing ? "PAUSE" : "PLAY"; enabled: root.playerState.loaded; ink: Color.accent; onClicked: root.act("toggle") }
+                    DeckButton { width: (parent.width - 32) / 5; text: root.playing ? "Ⅱ" : "▶"; caption: root.playing ? "PAUSE" : "PLAY"; enabled: root.playerState.loaded; ink: Commons.Color.accent; onClicked: root.act("toggle") }
                     DeckButton { width: (parent.width - 32) / 5; text: "■"; caption: "STOP"; enabled: root.playerState.loaded; onClicked: root.act("stop") }
                     DeckButton { width: (parent.width - 32) / 5; transportDirection: 1; caption: "FF"; hint: "Next track · hold to advance 10 seconds"; enabled: root.playerState.loaded; onClicked: if (!didHold) root.act("next"); onHeld: root.act("seek", 10) }
                 }
                 Row {
                     width: parent.width; spacing: 12
-                    Text { anchors.verticalCenter: parent.verticalCenter; text: "VOL"; color: Color.foreground; font.family: "monospace"; font.pixelSize: 10 }
+                    Text { anchors.verticalCenter: parent.verticalCenter; text: "VOL"; color: Commons.Color.foreground; font.family: "monospace"; font.pixelSize: 10 }
                     Controls.Slider {
                         id: volumeSlider
                         width: parent.width - 100; from: 0; to: 100; value: root.playerState.volume || 0
                         onPressedChanged: if (!pressed) root.act("volume", Math.round(value))
                         onMoved: if (!pressed) root.act("volume", Math.round(value))
                     }
-                    Text { anchors.verticalCenter: parent.verticalCenter; text: Math.round(root.playerState.volume || 0) + "%"; color: Color.foreground; font.family: "monospace"; font.pixelSize: 10 }
+                    Text { anchors.verticalCenter: parent.verticalCenter; text: Math.round(root.playerState.volume || 0) + "%"; color: Commons.Color.foreground; font.family: "monospace"; font.pixelSize: 10 }
                 }
                 Row {
                     spacing: 8
@@ -526,7 +532,7 @@ Panel {
                 anchors.bottom: parent.bottom; width: parent.width
                 visible: root.errorMessage !== "" || root.notice !== ""
                 text: root.errorMessage || root.notice; textFormat: Text.PlainText; wrapMode: Text.Wrap
-                color: root.errorMessage ? Color.urgent : Color.accent; font.pixelSize: 11
+                color: root.errorMessage ? Commons.Color.urgent : Commons.Color.accent; font.pixelSize: 11
             }
         }
     }

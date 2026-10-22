@@ -1,12 +1,16 @@
 import QtQuick
 import QtQuick.Controls
 import qs.Commons
+// The built-in `Color` value type shadows the qs.Commons `Color` singleton
+// in this context, so unqualified `Color.x` is silently undefined.
+// Qualify through the module alias — see the long note in Widget.qml.
+import qs.Commons as Commons
 
 AbstractButton {
     id: root
     property string caption: ""
     property string hint: caption
-    property color ink: Color.foreground
+    property color ink: Commons.Color.foreground
     property bool didHold: false
     property int transportDirection: 0
     signal held()
@@ -20,7 +24,7 @@ AbstractButton {
         radius: 3
         color: root.down ? Qt.rgba(root.ink.r, root.ink.g, root.ink.b, 0.20)
                          : Qt.rgba(root.ink.r, root.ink.g, root.ink.b, root.hovered ? 0.12 : 0.05)
-        border.color: root.activeFocus ? Color.accent : Qt.rgba(root.ink.r, root.ink.g, root.ink.b, 0.35)
+        border.color: root.activeFocus ? Commons.Color.accent : Qt.rgba(root.ink.r, root.ink.g, root.ink.b, 0.35)
         opacity: root.enabled ? 1 : 0.35
         Rectangle { x: 5; y: parent.height - 5; width: parent.width - 10; height: 2; color: root.ink; opacity: 0.16 }
     }

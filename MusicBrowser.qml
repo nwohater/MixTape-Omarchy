@@ -1,6 +1,10 @@
 import QtQuick
 import QtQuick.Controls as Controls
 import qs.Commons
+// The built-in `Color` value type shadows the qs.Commons `Color` singleton
+// in this context, so unqualified `Color.x` is silently undefined.
+// Qualify through the module alias — see the long note in Widget.qml.
+import qs.Commons as Commons
 
 Item {
     id: root
@@ -156,9 +160,9 @@ Item {
                     contentItem: Text {
                         text: (modelData.directory ? "▸  " : "") + modelData.name
                         textFormat: Text.PlainText; elide: Text.ElideMiddle
-                        color: parent.activeFocus ? Color.accent : Color.foreground; font.family: "monospace"; font.pixelSize: 12; verticalAlignment: Text.AlignVCenter
+                        color: parent.activeFocus ? Commons.Color.accent : Commons.Color.foreground; font.family: "monospace"; font.pixelSize: 12; verticalAlignment: Text.AlignVCenter
                     }
-                    background: Rectangle { color: parent.activeFocus ? Qt.rgba(Color.accent.r, Color.accent.g, Color.accent.b, 0.12) : "transparent" }
+                    background: Rectangle { color: parent.activeFocus ? Qt.rgba(Commons.Color.accent.r, Commons.Color.accent.g, Commons.Color.accent.b, 0.12) : "transparent" }
                     onClicked: {
                         if (modelData.directory) root.browse(modelData.path)
                         else if (root.adding) root.select(modelData.path, root.selected.indexOf(modelData.path) === -1)
@@ -166,12 +170,12 @@ Item {
                     }
                 }
             }
-            Text { anchors.centerIn: parent; visible: !root.busy && files.count === 0; text: "No music here yet."; color: Color.foreground; font.family: "monospace"; font.pixelSize: 12 }
+            Text { anchors.centerIn: parent; visible: !root.busy && files.count === 0; text: "No music here yet."; color: Commons.Color.foreground; font.family: "monospace"; font.pixelSize: 12 }
         }
         Text {
             visible: root.albumView
             text: "ALBUMS · " + root.albums.path
-            color: Color.foreground; opacity: 0.55; font.family: "monospace"; font.pixelSize: 10
+            color: Commons.Color.foreground; opacity: 0.55; font.family: "monospace"; font.pixelSize: 10
         }
         ListView {
             id: albumsList
@@ -190,13 +194,13 @@ Item {
                     contentItem: Text {
                         text: "▸  " + modelData.name + "   · " + (modelData.trackCount || 0) + " tracks"
                         textFormat: Text.PlainText; elide: Text.ElideMiddle
-                        color: parent.activeFocus ? Color.accent : Color.foreground; font.family: "monospace"; font.pixelSize: 12; verticalAlignment: Text.AlignVCenter
+                        color: parent.activeFocus ? Commons.Color.accent : Commons.Color.foreground; font.family: "monospace"; font.pixelSize: 12; verticalAlignment: Text.AlignVCenter
                     }
-                    background: Rectangle { color: parent.activeFocus ? Qt.rgba(Color.accent.r, Color.accent.g, Color.accent.b, 0.12) : "transparent" }
+                    background: Rectangle { color: parent.activeFocus ? Qt.rgba(Commons.Color.accent.r, Commons.Color.accent.g, Commons.Color.accent.b, 0.12) : "transparent" }
                     onClicked: root.submit("load-album", modelData.path)
                 }
             }
-            Text { anchors.centerIn: parent; visible: !root.busy && albumsList.count === 0; text: "No album folders with music in this directory."; color: Color.foreground; font.family: "monospace"; font.pixelSize: 12 }
+            Text { anchors.centerIn: parent; visible: !root.busy && albumsList.count === 0; text: "No album folders with music in this directory."; color: Commons.Color.foreground; font.family: "monospace"; font.pixelSize: 12 }
         }
         Row {
             visible: root.adding
@@ -207,7 +211,7 @@ Item {
                 highlightedMix: true
                 onClicked: root.submit(root.adding ? "append" : "load-many", root.selected)
             }
-            Text { anchors.verticalCenter: parent.verticalCenter; text: root.adding ? "Keeps current playback" : "Replaces current queue"; color: Color.foreground; opacity: 0.55; font.pixelSize: 10 }
+            Text { anchors.verticalCenter: parent.verticalCenter; text: root.adding ? "Keeps current playback" : "Replaces current queue"; color: Commons.Color.foreground; opacity: 0.55; font.pixelSize: 10 }
         }
     }
 
@@ -219,10 +223,10 @@ Item {
         anchors.right: parent.right
         anchors.bottom: parent.bottom
         height: 30
-        color: root.searchTyping ? Qt.rgba(Color.accent.r, Color.accent.g, Color.accent.b, 0.16) : "transparent"
+        color: root.searchTyping ? Qt.rgba(Commons.Color.accent.r, Commons.Color.accent.g, Commons.Color.accent.b, 0.16) : "transparent"
         border.width: 1
-        border.color: (root.searchTyping || root.searchActive) ? Color.accent
-            : Qt.rgba(Color.foreground.r, Color.foreground.g, Color.foreground.b, 0.25)
+        border.color: (root.searchTyping || root.searchActive) ? Commons.Color.accent
+            : Qt.rgba(Commons.Color.foreground.r, Commons.Color.foreground.g, Commons.Color.foreground.b, 0.25)
 
         Controls.TextField {
             id: searchField
@@ -231,7 +235,7 @@ Item {
             anchors.leftMargin: 8
             anchors.rightMargin: 8
             visible: root.searchTyping
-            color: Color.foreground
+            color: Commons.Color.foreground
             font.family: "monospace"
             font.pixelSize: 12
             verticalAlignment: TextInput.AlignVCenter
@@ -251,7 +255,7 @@ Item {
             elide: Text.ElideRight
             text: root.searchActive ? "⌕  " + root.searchQuery + "   ·  Esc to clear" : "Press / to filter"
             textFormat: Text.PlainText
-            color: root.searchActive ? Color.accent : Color.foreground
+            color: root.searchActive ? Commons.Color.accent : Commons.Color.foreground
             opacity: root.searchActive ? 1 : 0.45
             font.family: "monospace"; font.pixelSize: 11
             verticalAlignment: Text.AlignVCenter
