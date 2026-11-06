@@ -256,7 +256,7 @@ Panel {
                 Row {
                     width: parent.width; spacing: 12
                     Text { anchors.verticalCenter: parent.verticalCenter; text: "VOL"; color: Color.foreground; font.family: "monospace"; font.pixelSize: 10 }
-                    Controls.Slider {
+                    MixSlider {
                         width: parent.width - 100; from: 0; to: 100; value: root.playerState.volume || 0
                         onPressedChanged: if (!pressed) root.act("volume", Math.round(value))
                         onMoved: if (!pressed) root.act("volume", Math.round(value))

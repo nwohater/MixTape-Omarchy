@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.4.1 — 2026-11-05
+
+- Theme the volume slider, text fields, checkboxes, list rows, scrollbars, and
+  tooltips with the active Omarchy colors so they stay readable on any theme.
+
 ## 0.4.0 — 2026-09-19
 
 - Add entire music collections with **+ Folder**, including album subfolders.

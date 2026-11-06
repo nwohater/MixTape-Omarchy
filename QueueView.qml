@@ -43,7 +43,7 @@ Item {
         }
         Column {
             visible: root.saving; width: parent.width; spacing: 6
-            Controls.TextField {
+            MixField {
                 id: mixName
                 width: parent.width
                 placeholderText: "Name your mixtape"
@@ -69,12 +69,12 @@ Item {
             clip: true
             model: root.queueState.queue || []
             spacing: 4
-            Controls.ScrollBar.vertical: Controls.ScrollBar {}
+            Controls.ScrollBar.vertical: MixScrollBar {}
             delegate: Row {
                 required property var modelData
                 required property int index
                 width: tracks.width; spacing: 4; height: 34
-                Controls.ItemDelegate {
+                MixRow {
                     width: parent.width - 106; height: 34
                     enabled: !root.busy
                     contentItem: Text {
@@ -84,8 +84,7 @@ Item {
                         font.family: "monospace"; font.pixelSize: 12; verticalAlignment: Text.AlignVCenter
                     }
                     onClicked: root.action("play-entry", modelData.id)
-                    Controls.ToolTip.visible: hovered
-                    Controls.ToolTip.text: modelData.path
+                    MixTip { visible: parent.hovered; text: modelData.path }
                 }
                 MixButton { implicitWidth: 30; text: "↑"; enabled: !root.busy && index > 0; Accessible.name: "Move track up"; onClicked: root.action("move", {id: modelData.id, delta: -1}) }
                 MixButton { implicitWidth: 30; text: "↓"; enabled: !root.busy && index < tracks.count - 1; Accessible.name: "Move track down"; onClicked: root.action("move", {id: modelData.id, delta: 1}) }

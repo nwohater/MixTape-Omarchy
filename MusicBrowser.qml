@@ -36,7 +36,7 @@ Item {
             MixButton { text: "Saved mixes"; enabled: !root.busy; onClicked: root.library() }
         }
         Text { text: root.adding ? "ADD TO YOUR MIXTAPE" : "LOAD A MIXTAPE"; color: Color.foreground; font.family: "monospace"; font.pixelSize: 12; font.bold: true }
-        Controls.TextField {
+        MixField {
             width: parent.width
             text: root.listing.path
             placeholderText: "Directory path — press Enter"
@@ -54,19 +54,18 @@ Item {
                 text: "+ Folder"
                 enabled: !root.busy
                 onClicked: root.submit("add-folder", root.listing.path)
-                Controls.ToolTip.visible: hovered
-                Controls.ToolTip.text: "Add audio files in this folder and all subfolders"
+                MixTip { visible: parent.hovered; text: "Add audio files in this folder and all subfolders" }
             }
         }
         ListView {
             id: files
             width: parent.width; height: Math.max(100, root.height - y - 76); clip: true
             model: root.listing.entries
-            Controls.ScrollBar.vertical: Controls.ScrollBar {}
+            Controls.ScrollBar.vertical: MixScrollBar {}
             delegate: Row {
                 required property var modelData
                 width: files.width; height: 36
-                Controls.CheckBox {
+                MixCheck {
                     width: 34; height: 36
                     visible: !modelData.directory
                     enabled: !root.busy
@@ -74,7 +73,7 @@ Item {
                     Accessible.name: "Select " + modelData.name
                     onClicked: root.select(modelData.path, checked)
                 }
-                Controls.ItemDelegate {
+                MixRow {
                     width: parent.width - (modelData.directory ? 0 : 34); height: 36
                     enabled: !root.busy
                     contentItem: Text {
@@ -103,8 +102,7 @@ Item {
                 visible: !root.adding
                 enabled: !root.busy && root.selected.length > 0
                 onClicked: root.submit("build-many", root.selected)
-                Controls.ToolTip.visible: hovered
-                Controls.ToolTip.text: "Prepare selected songs in the queue and name your mixtape"
+                MixTip { visible: parent.hovered; text: "Prepare selected songs in the queue and name your mixtape" }
             }
         }
         Text {
