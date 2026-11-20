@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.4.2 — 2026-11-20
+
+- Fix washed-out UI on current Omarchy: bare `Color.*` resolved to undefined, so
+  the window rendered white. Use `Commons.Color.*` via `import qs.Commons as Commons`.
+
 ## 0.4.1 — 2026-11-05
 
 - Theme the volume slider, text fields, checkboxes, list rows, scrollbars, and

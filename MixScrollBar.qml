@@ -1,13 +1,14 @@
 import QtQuick
 import QtQuick.Controls
 import qs.Commons
+import qs.Commons as Commons
 
 ScrollBar {
     id: root
     contentItem: Rectangle {
         implicitWidth: 6
         radius: 3
-        color: Color.foreground
+        color: Commons.Color.foreground
         opacity: root.pressed ? 0.6 : root.active ? 0.35 : 0
     }
     background: Item {}

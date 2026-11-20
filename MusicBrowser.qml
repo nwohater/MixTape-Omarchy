@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls as Controls
 import qs.Commons
+import qs.Commons as Commons
 
 Item {
     id: root
@@ -35,7 +36,7 @@ Item {
             MixButton { text: "↑ Up"; enabled: !root.busy; onClicked: root.browse(root.listing.parent) }
             MixButton { text: "Saved mixes"; enabled: !root.busy; onClicked: root.library() }
         }
-        Text { text: root.adding ? "ADD TO YOUR MIXTAPE" : "LOAD A MIXTAPE"; color: Color.foreground; font.family: "monospace"; font.pixelSize: 12; font.bold: true }
+        Text { text: root.adding ? "ADD TO YOUR MIXTAPE" : "LOAD A MIXTAPE"; color: Commons.Color.foreground; font.family: "monospace"; font.pixelSize: 12; font.bold: true }
         MixField {
             width: parent.width
             text: root.listing.path
@@ -79,7 +80,7 @@ Item {
                     contentItem: Text {
                         text: (modelData.directory ? "▸  " : "") + modelData.name
                         textFormat: Text.PlainText; elide: Text.ElideMiddle
-                        color: Color.foreground; font.family: "monospace"; font.pixelSize: 12; verticalAlignment: Text.AlignVCenter
+                        color: Commons.Color.foreground; font.family: "monospace"; font.pixelSize: 12; verticalAlignment: Text.AlignVCenter
                     }
                     onClicked: {
                         if (modelData.directory) root.browse(modelData.path)
@@ -87,7 +88,7 @@ Item {
                     }
                 }
             }
-            Text { anchors.centerIn: parent; visible: !root.busy && files.count === 0; text: "No music here yet."; color: Color.foreground; font.family: "monospace"; font.pixelSize: 12 }
+            Text { anchors.centerIn: parent; visible: !root.busy && files.count === 0; text: "No music here yet."; color: Commons.Color.foreground; font.family: "monospace"; font.pixelSize: 12 }
         }
         Row {
             spacing: 8
@@ -107,7 +108,7 @@ Item {
         }
         Text {
             text: root.adding ? "Keeps current playback" : "Replaces current queue · Save selected prepares it paused"
-            color: Color.foreground; opacity: 0.55; font.pixelSize: 10
+            color: Commons.Color.foreground; opacity: 0.55; font.pixelSize: 10
         }
     }
 }
